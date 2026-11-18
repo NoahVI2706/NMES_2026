@@ -76,9 +76,18 @@ PostProcessing {
         Term { [ Norm[-{d v}] ];
           In Domain_Ele; Jacobian Vol; }
       } }
+
+      { Name energy; Value { //CHANGE FROM THE PROFESSOR: NEEDED TO CALCULATE THE CAPACITANCE (from tutorial GetDP)
+          Integral {
+            [ epsilon[] / 2 * SquNorm[{d v}] ];
+            In Domain_Ele;
+            Jacobian Vol;
+            Integration I1;
+          }
+        }
+      }
     }
   }
-
 }
 
 // 5. Export results for visualization
@@ -93,6 +102,13 @@ PostOperation {
       Print[ em, OnElementsOf Domain_Ele,
         Name "|E| [V/m]",
         File "res/electric_field.pos" ];
+      
+      Print[
+        energy[Domain_Ele],
+        OnGlobal,
+        File "res/energy.txt",
+        Format Table
+      ];
     }
   }
 
