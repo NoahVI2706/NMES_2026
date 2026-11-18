@@ -1,0 +1,25 @@
+# ========================================
+# NMES project - Git ignore rules
+# ========================================
+
+# Gmsh / GetDP generated files
+*.msh
+*.pre
+*.res
+*.db
+*.db.json
+
+# GetDP post-processing results
+*.pos
+
+# Generated result directories
+**/res/
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Python cache (if we use Python later)
+__pycache__/
+*.pyc
