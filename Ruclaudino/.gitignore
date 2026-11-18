@@ -1,0 +1,15 @@
+meshes/
+runs/
+res/
+logs/
+*.msh
+*.pre
+*.res
+*.db
+*.db.json
+__pycache__/
+
+git init
+git branch -M main
+git add .
+git status
