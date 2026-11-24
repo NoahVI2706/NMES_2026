@@ -55,7 +55,7 @@ EndFor
 // 4b. Air void inside XLPE insulation
 // Void dimensions [m]
 voidRadius = 0.0005;       // 0.5 mm
-voidDistance = 0.016;      // 14 mm from cable centre
+voidDistance = 0.014;      // 14 mm from cable centre
 
 // Position relative to the centre of phase A
 voidX = x[0] + voidDistance;

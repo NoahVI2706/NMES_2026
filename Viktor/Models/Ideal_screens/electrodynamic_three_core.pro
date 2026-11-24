@@ -77,6 +77,22 @@ PostProcessing {
           In Domain_Ele; Jacobian Vol; }
       } }
 
+      // Magnitude of resistive current density [A/m2]
+      { Name j_res; Value {
+        Term {
+          [ sigma[] * Norm[-{d v}] ];
+          In Domain_Ele; Jacobian Vol;
+        }
+      } }
+
+      // Magnitude of displacement current density [A/m2]
+      { Name j_disp; Value {
+        Term {
+          [ 2*Pi*Freq*epsilon[] * Norm[-{d v}] ];
+          In Domain_Ele; Jacobian Vol;
+        }
+      } }
+
       { Name energy; Value { //CHANGE FROM THE PROFESSOR: NEEDED TO CALCULATE THE CAPACITANCE (from tutorial GetDP)
           Integral {
             [ epsilon[] / 2 * SquNorm[{d v}] ];
@@ -103,6 +119,14 @@ PostOperation {
         Name "|E| [V/m]",
         File "res/electric_field.pos" ];
       
+      Print[ j_res, OnElementsOf Domain_Ele,
+        Name "|J_res| [A/m2]",
+        File "res/j_resistive.pos" ];
+
+      Print[ j_disp, OnElementsOf Domain_Ele,
+        Name "|J_disp| [A/m2]",
+        File "res/j_displacement.pos" ];
+
       Print[
         energy[Domain_Ele],
         OnGlobal,
