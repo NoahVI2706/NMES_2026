@@ -8,6 +8,7 @@
 *.res
 *.db
 *.db.json
+*.log
 
 # GetDP post-processing results
 *.pos
