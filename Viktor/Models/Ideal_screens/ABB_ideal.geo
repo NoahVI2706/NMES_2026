@@ -124,4 +124,4 @@ Printf("Ground curves: %g", #groundCurves[]);
 // 10. Mesh settings
 //////////////////////////////////////////////////
 
-Mesh.MeshSizeMax = 0.001;
+Mesh.MeshSizeMax = 0.00025;
