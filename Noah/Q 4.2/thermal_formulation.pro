@@ -35,12 +35,12 @@ Function {
     kappa[Seabed] = kappa_seabed;
   EndIf
 
-  // ONE source function. Later replace these expressions by
-  // 0.5*|j|^2/sigma with <a>[ ... ] in the conductor and lead regions.
-  // TODO/P_IN: P_cond_per_core and P_sheath_per_core define the 66 W/m
-  // placeholder input power located here: 3*(20+2).
-  Q[Aluminium] = P_cond_per_core/(Pi*r_conductor*r_conductor);
-  Q[Lead] = P_sheath_per_core/(Pi*(r_lead*r_lead-r_outerScreen*r_outerScreen));
+  // TODO/ELECTROTHERMAL: replace the placeholders below by
+  // 0.5*|j|^2/sigma with <a>[ ... ].
+  // A_mesh is computed on the current mesh by GetDP SurfaceArea[]:
+  // Integral[1] over the source region. This guarantees exact P_in.
+  Q[Aluminium] = 3*P_cond_per_core/SurfaceArea[];
+  Q[Lead] = 3*P_sheath_per_core/SurfaceArea[];
   Q[InnerScreen] = 0;
   Q[XLPE] = 0;
   Q[OuterScreen] = 0;
@@ -136,7 +136,12 @@ PostProcessing {
       { Name T; Value { Term { [ {T} ]; In Domain; Jacobian Vol; } } }
       { Name T_surface; Value { Term { [ {T} ];
         In Gamma_surface; Jacobian Sur; } } }
-      // TODO/P_IN: integrate conductors and lead sheaths separately.
+      // TODO/P_IN: mesh-exact source power for all three conductors/leads.
+      // A_mesh=Integral[1] over each source region.
+      { Name A_cond_mesh; Value { Integral { [ 1 ];
+        In Aluminium; Jacobian Vol; Integration I1; } } }
+      { Name A_lead_mesh; Value { Integral { [ 1 ];
+        In Lead; Jacobian Vol; Integration I1; } } }
       { Name P_cond_in; Value { Integral { [ Q[] ];
         In Aluminium; Jacobian Vol; Integration I1; } } }
       { Name P_lead_in; Value { Integral { [ Q[] ];
@@ -153,6 +158,8 @@ PostOperation {
     Operation {
       Print[ T, OnElementsOf Domain, File "res/T_domain.pos" ];
       Print[ T, OnElementsOf Cable, File "res/T_cable.pos" ];
+      Print[ A_cond_mesh[Aluminium], OnGlobal, Format Table, File "res/A_cond_mesh.txt" ];
+      Print[ A_lead_mesh[Lead], OnGlobal, Format Table, File "res/A_lead_mesh.txt" ];
       Print[ P_cond_in[Aluminium], OnGlobal, Format Table, File "res/P_cond_in.txt" ];
       Print[ P_lead_in[Lead], OnGlobal, Format Table, File "res/P_lead_in.txt" ];
       Print[ P_out, OnGlobal, Format Table, File "res/P_out.txt" ];
