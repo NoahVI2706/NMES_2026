@@ -1,7 +1,7 @@
 DefineConstant[
   bottom_bc = {1, Choices {0="Dirichlet T=T_amb",1="Zero flux"}, Name "Boundary/Bottom condition"},
   kappa_uniform = {0, Choices {0="Real kappa",1="Uniform kappa=1"}, Name "Test/Uniform kappa"},
-  outer_all_dirichlet = {0, Choices {0="Normal boundaries",1="All outer boundaries Dirichlet"}, Name "Test/All outer boundaries Dirichlet"},
+  surface_bc = {0, Choices {0="Convection",1="Dirichlet T=T_amb"}, Name "Boundary/Ground-air surface condition"},
   Freq = {50.0, Name "MQS/Frequency [Hz]"},
   I_rms = {385.0, Name "MQS/Phase current RMS [A]"},
   sigma_Al_mqs = {3.77e7, Name "MQS/Aluminium conductivity [S/m]"},

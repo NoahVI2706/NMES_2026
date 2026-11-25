@@ -96,13 +96,11 @@ If (bottom_bc == 0)
     }
   }
 EndIf
-If (outer_all_dirichlet == 1)
+If (surface_bc == 1)
   Constraint {
-    { Name Dirichlet_T_All; Type Assign;
+    { Name Dirichlet_T_Surface; Type Assign;
       Case {
         { Region Gamma_surface; Value T_amb; }
-        { Region Gamma_left; Value T_amb; }
-        { Region Gamma_right; Value T_amb; }
       }
     }
   }
@@ -144,9 +142,9 @@ FunctionSpace {
         { NameOfCoef Tn; EntityType NodesOf;
           NameOfConstraint Dirichlet_T; }
       EndIf
-      If (outer_all_dirichlet == 1)
+      If (surface_bc == 1)
         { NameOfCoef Tn; EntityType NodesOf;
-          NameOfConstraint Dirichlet_T_All; }
+          NameOfConstraint Dirichlet_T_Surface; }
       EndIf
     }
   }
@@ -186,7 +184,7 @@ Formulation {
     Equation {
       Integral { [ kappa[]*Dof{d T},{d T} ];
         In Domain; Jacobian Vol; Integration I1; }
-      If (outer_all_dirichlet == 0)
+      If (surface_bc == 0)
         Integral { [ h*Dof{T},{T} ];
           In Gamma_surface; Jacobian Sur; Integration I1; }
         Integral { [ -h*Tamb[],{T} ];
