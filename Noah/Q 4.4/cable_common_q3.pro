@@ -9,6 +9,7 @@ DefineConstant[
 
   // Aluminium conductor (matches Q1 table)
   sigma_Al      = {3.8e7,   Name "Cable/Materials/Aluminium/sigma"},
+  A_cond_Al     = {240.0,   Name "Cable/Materials/Aluminium/metal area [mm2]"},
   epsilon_r_Al  = {1.0,     Name "Cable/Materials/Aluminium/epsilon_r"},
 
   sigma_XLPE    = {1e-18,   Name "Cable/Materials/XLPE/sigma"},
@@ -29,12 +30,12 @@ DefineConstant[
   sigma_Outer   = {1e-18,   Name "Cable/Materials/Outer/sigma"},
   epsilon_r_Outer = {2.3,   Name "Cable/Materials/Outer/epsilon_r"},
 
-  sigma_Soil    = {0.5,     Name "Cable/Materials/Soil/sigma"},
+  sigma_Soil    = {0.01,     Name "Cable/Materials/Soil/sigma"},
   epsilon_r_Soil= {10.0,    Name "Cable/Materials/Soil/epsilon_r"},
 
   // Shared geometry (needed for the cut)
-  d_trefoil     = {40.0,    Name "Geometry/d_trefoil [mm]"},
-  r_lead        = {19.75,   Name "Geometry/r_lead [mm]"}
+  d_trefoil     = {41.2,    Name "Geometry/d_trefoil [mm]"},
+  r_lead        = {20.35,   Name "Geometry/r_lead [mm]"}
 ];
 DefineConstant[ Flag_Simplify = {0, Name "Cable/Simplification (0 full, 1 cores only, 2 cores + grounded outer semicon, 3 one core only)"} ];
 DefineConstant[ Core_Sel = {3, Name "Cable/One-core variant: core kept (1=A, 2=B, 3=C)"} ];   // NEW: used only when Flag_Simplify == 3
@@ -99,7 +100,8 @@ Group {
 Function {
   eps0 = 8.8541878128e-12;
 
-  sigma[Region[{Ind_1,Ind_2,Ind_3}]]    = sigma_Al;
+  sigma_Al_eff = sigma_Al*A_cond_Al/(Pi*9.05^2);
+  sigma[Region[{Ind_1,Ind_2,Ind_3}]]    = sigma_Al_eff;
   epsilon[Region[{Ind_1,Ind_2,Ind_3}]]  = epsilon_r_Al * eps0;
 
   sigma[Region[{XLPE_A,XLPE_B,XLPE_C}]]   = sigma_XLPE;

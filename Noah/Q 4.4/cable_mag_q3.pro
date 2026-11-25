@@ -19,6 +19,7 @@ DefineConstant[
 
   // --- Materials ---
   sigma_Al    = {3.77e7, Name "Cable/Materials/Aluminium/sigma"},           // Table 3
+  A_cond_Al   = {240.0, Name "Cable/Materials/Aluminium/metal area [mm2]"},
   alpha_Al    = {0.0039, Name "Cable/Materials/Aluminium/alpha [1/K]"},     // Appendix A
   Theta_Al    = {20.0,   Name "Cable/Materials/Aluminium/Temperature [C]"}, // 20 C: sigma = sigma_Al
   fill_Al     = {1.0,    Name "Cable/Materials/Aluminium/Fill factor on sigma (1 = Table 3)"},
@@ -26,9 +27,9 @@ DefineConstant[
   sigma_Armour= {4.7e6,  Name "Cable/Materials/Armour/sigma"},              // Table 3
   mur_Armour  = {4.0,    Name "Cable/Materials/Armour/mu_r"},               // Table 3 (assume); Open: justify
   sigma_Semi  = {2.0,    Name "Cable/Materials/Semicon/sigma"},
-  sigma_Soil  = {0.5,    Name "Cable/Materials/Soil/sigma"},                // Q1.2 (source Open)
+  sigma_Soil  = {0.01,    Name "Cable/Materials/Soil/sigma"},                // Q1.2 (source Open)
   r_cond_mm   = {9.05,   Name "Geometry/r_cond [mm]"},
-  r_soil_mm   = {310.0,  Name "Geometry/r_soil [mm]"},               // truncation radius (same ONELAB name as in the .geo)
+  r_soil_mm   = {620.0,  Name "Geometry/r_soil [mm]"},               // truncation radius (same ONELAB name as in the .geo)
   Flag_BC     = {0,      Name "Model/Truncation BC (0 Dirichlet a=0, 1 asymptotic mixed BC)"},
   m_asym      = {1.0,    Name "Model/Asymptotic BC: leading harmonic m"}
 ];
@@ -77,8 +78,9 @@ Group {
 }
 
 Function {
-  sigma[Ind_1]    = fill_Al*sigma_Al/(1+alpha_Al*(Theta_Al-20.0));
-  sigma[Region[{Ind_2, Ind_3}]] = Flag_OneCore ? 1e-3 : fill_Al*sigma_Al/(1+alpha_Al*(Theta_Al-20.0));   // one-core test: B, C are inert
+  sigma_Al_eff = sigma_Al*A_cond_Al/(Pi*r_cond_mm^2);
+  sigma[Ind_1]    = fill_Al*sigma_Al_eff/(1+alpha_Al*(Theta_Al-20.0));
+  sigma[Region[{Ind_2, Ind_3}]] = Flag_OneCore ? 1e-3 : fill_Al*sigma_Al_eff/(1+alpha_Al*(Theta_Al-20.0));   // one-core test: B, C are inert
   sigma[Lead_A]   = sigma_Lead;
   sigma[Region[{Lead_B, Lead_C}]] = Flag_OneCore ? 0.0 : sigma_Lead;   // one-core test: sheaths B, C removed
   sigma[Steel]    = Flag_OneCore ? 0.0 : sigma_Armour;                 // one-core test: armour removed
