@@ -1,49 +1,33 @@
-# Three-core cable thermal model
+# Q4.2 cable thermal model
 
-Run from this directory.
+## Tools
+
+- Gmsh 4.15.2 (ONELAB Windows bundle)
+- GetDP 4.0.0-git-259f4c38
+- Python 3.10 with NumPy and Matplotlib
+
+## Files
+
+- [cable_thermal.geo](./cable_thermal.geo): cable/seabed geometry, physical groups, and mesh fields.
+- [cable_thermal.pro](./cable_thermal.pro): thermal Onelab parameters; includes the formulation.
+- [thermal_formulation.pro](./thermal_formulation.pro): regions, materials, sources, weak form, boundary conditions, and result exports.
+- [Jacobian_Integration.pro](./Jacobian_Integration.pro): Jacobians and integration rules included by the formulation.
+- [plot_T.py](./plot_T.py): reads `res/T_domain.pos` and writes `T_domain.png` and `T_cable.png`.
+- `ABB_three_core.geo` / `ABB_three_core.pro`: legacy electrodynamic model files; not included or needed by the Q4.2 thermal workflow.
+
+## Reproduce current slide figures
+
+Run in PowerShell. These defaults use zero flux at the bottom, convection at the surface, and the current mesh-normalized total source of 53.2927608 W/m.
 
 ```powershell
 $gmsh = 'C:\Users\Noah\Downloads\BURGI\NM\FE\onelab-Windows64real\onelab-Windows64real\gmsh.exe'
 $getdp = 'C:\Users\Noah\Downloads\BURGI\NM\FE\onelab-Windows64real\onelab-Windows64real\getdp.exe'
-mkdir res -Force
-& $gmsh -2 cable_thermal.geo -o cable_thermal.msh
-& $getdp cable_thermal.pro -solve Thermal -pos ThermalOutputs
+$python = 'C:\Users\Noah\AppData\Local\Programs\Python\Python310\python.exe'
+Set-Location 'C:\Users\Noah\Downloads\BURGI\NM\FE\Lab\NMES_2026\Noah\Q 4.2'
+New-Item -ItemType Directory -Force .\res | Out-Null
+& $gmsh .\cable_thermal.geo -2 -format msh2 -o .\cable_thermal.msh
+& $getdp .\cable_thermal.pro -msh .\cable_thermal.msh -setnumber bottom 1 -solve Thermal -pos ThermalOutputs
+& $python .\plot_T.py
 ```
 
-The bottom boundary defaults to zero flux (`bottom=1`). To solve with
-Dirichlet T=T_amb, use:
-
-```powershell
-& $getdp cable_thermal.pro -setnumber bottom 0 -solve Thermal -pos ThermalOutputs
-```
-
-Mesh/solve with the GUI:
-
-```text
-gmsh cable_thermal.geo
-getdp cable_thermal.pro -solve Thermal -pos ThermalOutputs
-```
-
-Outputs:
-
-- `res/T_domain.pos`: temperature map for the full seabed.
-- `res/T_cable.pos`: temperature map for cable regions.
-- `res/P_cond_in.txt`, `res/P_lead_in.txt`, `res/P_armour_in.txt`, and
-  `res/P_other_in.txt`: source power by material region.
-- `res/P_in.txt`: total mesh-normalized source power (53.2928 W/m).
-- `res/A_cond_mesh.txt`: conductor area computed from the current mesh.
-- `res/A_lead_mesh.txt`: lead area computed from the current mesh.
-- `res/P_out.txt`: surface convection power.
-- `res/T_cond_elements.txt`: sampled conductor-element temperatures.
-- `res/T_surface_elements.txt`: sampled seabed-surface temperatures.
-- `res/T_cond_points.txt`: temperature at all three conductor centres.
-- `res/T_surface_point.txt`: temperature at (0,0) on the seabed surface.
-
-Compute the conductor maximum and power balance with Python:
-
-```powershell
-python -c "import re; vals=lambda f:[float(v) for v in re.findall(r'[-+]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:[Ee][-+]?\d+)?',open(f).read())]; tc=max(vals('res/T_cond_points.txt')); ts=vals('res/T_surface_point.txt')[0]; pin=vals('res/P_in.txt')[-1]; pout=vals('res/P_out.txt')[-1]; print(f'T_cond_max={tc:.6g} C'); print(f'T_surface={ts:.6g} C'); print(f'P_in={pin:.6g} W/m'); print(f'P_out={pout:.6g} W/m'); print(f'relative balance={(abs(pout-pin)/pin):.3e}')"
-```
-
-`P_in.txt` and `P_out.txt` are GetDP global table outputs. The
-acceptance power balance is `|P_out-P_in|/P_in`.
+`bottom=1` is zero flux; use `-setnumber bottom 0` for `T=T_amb` at the bottom. Other defaults are in the two model files.
