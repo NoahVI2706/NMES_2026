@@ -29,7 +29,7 @@ DefineConstant[
   sigma_Outer   = {1e-18,   Name "Cable/Materials/Outer/sigma"},
   epsilon_r_Outer = {2.3,   Name "Cable/Materials/Outer/epsilon_r"},
 
-  sigma_Soil    = {0.5,     Name "Cable/Materials/Soil/sigma"},
+  sigma_Soil    = {0.01,     Name "Cable/Materials/Soil/sigma"},
   epsilon_r_Soil= {10.0,    Name "Cable/Materials/Soil/epsilon_r"},
 
   // Shared geometry (needed for the cut)
