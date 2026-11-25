@@ -57,7 +57,7 @@ def run(study, lc, D, W, bottom):
 cases = []
 for lc in (2.0, 1.0, 0.5, 0.25):
     cases.append(("A", lc, 30, 60, 0))
-for D in (10, 20, 40, 80):
+for D in (10, 20, 30, 60, 100):
     for bottom in (0, 1):
         cases.append(("B", 0.5, D, 2 * D, bottom))
 
