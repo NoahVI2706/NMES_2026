@@ -11,7 +11,7 @@ DefineConstant[
   sigma_Al      = {3.8e7,   Name "Cable/Materials/Aluminium/sigma"},
   epsilon_r_Al  = {1.0,     Name "Cable/Materials/Aluminium/epsilon_r"},
 
-  sigma_XLPE    = {1e-14,   Name "Cable/Materials/XLPE/sigma"},
+  sigma_XLPE    = {1e-18,   Name "Cable/Materials/XLPE/sigma"},
   epsilon_r_XLPE= {2.5,     Name "Cable/Materials/XLPE/epsilon_r"},
 
   sigma_Semi    = {2.0,     Name "Cable/Materials/Semicon/sigma"},
@@ -26,10 +26,10 @@ DefineConstant[
   sigma_Armour  = {4.5e6,   Name "Cable/Materials/Armour/sigma"},
   epsilon_r_Armour = {1.0,  Name "Cable/Materials/Armour/epsilon_r"},
 
-  sigma_Outer   = {1e-14,   Name "Cable/Materials/Outer/sigma"},
+  sigma_Outer   = {1e-18,   Name "Cable/Materials/Outer/sigma"},
   epsilon_r_Outer = {2.3,   Name "Cable/Materials/Outer/epsilon_r"},
 
-  sigma_Soil    = {0.5,     Name "Cable/Materials/Soil/sigma"},
+  sigma_Soil    = {0.01,     Name "Cable/Materials/Soil/sigma"},
   epsilon_r_Soil= {10.0,    Name "Cable/Materials/Soil/epsilon_r"},
 
   // Shared geometry (needed for the cut)
