@@ -4,8 +4,10 @@ DefineConstant[
   outer_all_dirichlet = {0, Choices {0="Normal boundaries",1="All outer boundaries Dirichlet"}, Name "Test/All outer boundaries Dirichlet"},
   T_amb = {20.0, Name "Thermal/Ambient temperature [C]"},
   h = {500.0, Name "Thermal/Convection coefficient [W/m2/K]"},
-  P_cond_per_core = {20.0, Name "Thermal/Conductor source [W/m]"},
-  P_sheath_per_core = {2.0, Name "Thermal/Lead sheath source [W/m]"},
+  P_cond_per_core = {16.3372037279, Name "Thermal/Conductor source [W/m]"},
+  P_sheath_per_core = {0.4513616206, Name "Thermal/Lead sheath source [W/m]"},
+  P_armour_total = {2.9270646187, Name "Thermal/Armour source [W/m]"},
+  P_seabed_total = {1.5339867e-7, Name "Thermal/Seabed source [W/m]"},
   kappa_seabed = {1.0, Name "Thermal/kappa seabed [W/m/K]"}, // Assumed
   kappa_xlpe = {0.46, Name "Thermal/kappa XLPE [W/m/K]"},
   kappa_lead = {35.0, Name "Thermal/kappa lead [W/m/K]"},

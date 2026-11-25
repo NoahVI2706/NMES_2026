@@ -35,19 +35,16 @@ Function {
     kappa[Seabed] = kappa_seabed;
   EndIf
 
-  // TODO/ELECTROTHERMAL: replace the placeholders below by
-  // 0.5*|j|^2/sigma with <a>[ ... ].
-  // A_mesh is computed on the current mesh by GetDP SurfaceArea[]:
-  // Integral[1] over the source region. This guarantees exact P_in.
+  // Q3.9 losses mapped to mesh-normalized thermal source densities.
   Q[Aluminium] = 3*P_cond_per_core/SurfaceArea[];
   Q[Lead] = 3*P_sheath_per_core/SurfaceArea[];
+  Q[Steel] = P_armour_total/SurfaceArea[];
+  Q[Seabed] = P_seabed_total/SurfaceArea[];
   Q[InnerScreen] = 0;
   Q[XLPE] = 0;
   Q[OuterScreen] = 0;
   Q[Filler] = 0;
-  Q[Steel] = 0;
   Q[Polyethylene] = 0;
-  Q[Seabed] = 0;
   h[] = h;
   Tamb[] = T_amb;
 }
@@ -146,6 +143,16 @@ PostProcessing {
         In Aluminium; Jacobian Vol; Integration I1; } } }
       { Name P_lead_in; Value { Integral { [ Q[] ];
         In Lead; Jacobian Vol; Integration I1; } } }
+      { Name P_armour_in; Value { Integral { [ Q[] ];
+        In Steel; Jacobian Vol; Integration I1; } } }
+      { Name P_other_in; Value { Integral { [ Q[] ];
+        In Seabed; Jacobian Vol; Integration I1; } } }
+      { Name P_in; Value {
+        Integral { Type Global; [ Q[] ]; In Aluminium; Jacobian Vol; Integration I1; }
+        Integral { Type Global; [ Q[] ]; In Lead; Jacobian Vol; Integration I1; }
+        Integral { Type Global; [ Q[] ]; In Steel; Jacobian Vol; Integration I1; }
+        Integral { Type Global; [ Q[] ]; In Seabed; Jacobian Vol; Integration I1; }
+      } }
       { Name P_out; Value { Integral { Type Global;
         [ h[]*({T}-Tamb[]) ]; In Gamma_surface;
         Jacobian Sur; Integration I1; } } }
@@ -162,6 +169,9 @@ PostOperation {
       Print[ A_lead_mesh[Lead], OnGlobal, Format Table, File "res/A_lead_mesh.txt" ];
       Print[ P_cond_in[Aluminium], OnGlobal, Format Table, File "res/P_cond_in.txt" ];
       Print[ P_lead_in[Lead], OnGlobal, Format Table, File "res/P_lead_in.txt" ];
+      Print[ P_armour_in[Steel], OnGlobal, Format Table, File "res/P_armour_in.txt" ];
+      Print[ P_other_in[Seabed], OnGlobal, Format Table, File "res/P_other_in.txt" ];
+      Print[ P_in, OnGlobal, Format Table, File "res/P_in.txt" ];
       Print[ P_out, OnGlobal, Format Table, File "res/P_out.txt" ];
       Print[ T, OnElementsOf Aluminium, Format Table, File "res/T_cond_elements.txt" ];
       Print[ T_surface, OnElementsOf Gamma_surface, Format Table, File "res/T_surface_elements.txt" ];
