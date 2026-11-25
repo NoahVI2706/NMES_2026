@@ -14,6 +14,7 @@ DefineConstant[
   Flag_Bonding = {1, Name "Magnetic/Model/Bonding (1 solid, 2 single point)"},
   Flag_BC = {0, Name "Magnetic/Model/Outer BC (0 Dirichlet, 1 asymptotic)"},
   Flag_Degree_a = {1, Name "Magnetic/Model/FE degree (1 or 2)"},
+  Flag_SoilCurrent = {1, Name "Magnetic/Model/Seabed currents (1 yes, 0 no)"},
   m_asym = {1, Name "Magnetic/Model/Asymptotic harmonic order"},
 
   sigma_Al = {3.77e7, Name "Magnetic/Materials/Aluminium conductivity [S/m]"},
@@ -50,7 +51,10 @@ Group {
                        Lead, Filling, Steel, OuterJacket, Soil}];
 
   // Massive conductors have J = -sigma (i*omega*a + grad(v)).
-  DomainC_Mag = Region[{Lead, Steel, Soil}];
+  DomainC_Mag = Region[{Lead, Steel}];
+  If(Flag_SoilCurrent == 1)
+    DomainC_Mag += Region[{Soil}];
+  EndIf
   If(Flag_Conductor == 2)
     DomainC_Mag += Region[{Aluminium}];
   EndIf
@@ -64,7 +68,10 @@ Group {
   DomainS0_Mag = Region[{}];
 
   // Regions with specified net current (instead of specified voltage).
-  DomainCWithI_Mag = Region[{Soil}];
+  DomainCWithI_Mag = Region[{}];
+  If(Flag_SoilCurrent == 1)
+    DomainCWithI_Mag += Region[{Soil}];
+  EndIf
   If(Flag_Conductor == 2)
     DomainCWithI_Mag += Region[{Aluminium}];
   EndIf
@@ -107,7 +114,9 @@ Constraint {
       { Region Al_B; Value Ipeak*Complex[Cos[-2*Pi/3],Sin[-2*Pi/3]]; }
       { Region Al_C; Value Ipeak*Complex[Cos[ 2*Pi/3],Sin[ 2*Pi/3]]; }
 
-      { Region Soil; Value 0; }  // no externally supplied longitudinal soil current
+      If(Flag_SoilCurrent == 1)
+        { Region Soil; Value 0; }
+      EndIf
       If(Flag_Bonding == 2)
         // Each sheath is constrained independently, not only their sum.
         { Region Lead_A; Value 0; }
