@@ -27,9 +27,9 @@ DefineConstant[
   sigma_Armour= {4.7e6,  Name "Cable/Materials/Armour/sigma"},              // Table 3
   mur_Armour  = {4.0,    Name "Cable/Materials/Armour/mu_r"},               // Table 3 (assume); Open: justify
   sigma_Semi  = {2.0,    Name "Cable/Materials/Semicon/sigma"},
-  sigma_Soil  = {0.5,    Name "Cable/Materials/Soil/sigma"},                // Q1.2 (source Open)
+  sigma_Soil  = {0.01,    Name "Cable/Materials/Soil/sigma"},                // Q1.2 (source Open)
   r_cond_mm   = {9.05,   Name "Geometry/r_cond [mm]"},
-  r_soil_mm   = {310.0,  Name "Geometry/r_soil [mm]"},               // truncation radius (same ONELAB name as in the .geo)
+  r_soil_mm   = {620.0,  Name "Geometry/r_soil [mm]"},               // truncation radius (same ONELAB name as in the .geo)
   Flag_BC     = {0,      Name "Model/Truncation BC (0 Dirichlet a=0, 1 asymptotic mixed BC)"},
   m_asym      = {1.0,    Name "Model/Asymptotic BC: leading harmonic m"}
 ];

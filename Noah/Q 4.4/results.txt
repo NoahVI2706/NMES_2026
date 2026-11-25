@@ -1,17 +1,17 @@
 | Metric | Value |
 |---|---:|
-| Effective aluminium conductivity | 3.51646×10⁷ S/m (factor 0.93275) |
-| Model R_DC at 20°C | 0.11052 Ω/km |
-| ABB datasheet R_DC limit at 20°C | 0.125 Ω/km max; model is 11.6% below limit |
+| Effective aluminium conductivity | 3.51646×10⁷ S/m |
+| Model R_DC / ABB datasheet maximum at 20°C | 0.11052 / 0.125 Ω/km |
+| Seabed conductivity used | 0.01 S/m |
 | Losses — conductors | 49.011611 W/m |
-| Losses — sheaths | 1.354084 W/m |
-| Losses — armour | 2.927063 W/m |
-| Losses — other | 0.000007670 W/m |
-| Losses — total | 53.292766 W/m |
-| T_cond_max — A / B / C | 59.217548 / 59.251610 / 59.253187 °C |
+| Losses — sheaths | 1.354085 W/m |
+| Losses — armour | 2.927065 W/m |
+| Losses — other | 0.000000153 W/m |
+| Losses — total | 53.292761 W/m |
+| T_cond_max — A / B / C | 59.217547 / 59.251610 / 59.253187 °C |
 | Hotspot core | C |
 | T_surface_max | 20.034043 °C |
-| P_in / P_out (zero-flux bottom) | 53.292766 / 53.292766 W/m |
-| Relative power error | 6.31×10⁻¹² |
+| P_in / P_out (zero-flux bottom) | 53.292761 / 53.292761 W/m |
+| Relative power error | 5.58×10⁻¹² |
 | n_dofs (MQS + thermal = total) | 64,960 + 32,649 = 97,609 |
 | Q3 source files updated | `cable_common_q3.pro`, `cable_mag_q3.pro` |

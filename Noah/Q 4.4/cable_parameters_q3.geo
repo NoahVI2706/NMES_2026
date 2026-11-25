@@ -20,7 +20,7 @@ DefineConstant[
   r_fill        = {45.0,  Name "Geometry/r_fill [mm]"},
   r_armour_out  = {49.0,  Name "Geometry/r_armour_out [mm]"},
   r_outer       = {62.0,  Name "Geometry/r_outer [mm]"},
-  r_soil        = {310.0, Name "Geometry/r_soil [mm]"},   // ~5× outer
+  r_soil        = {620.0, Name "Geometry/r_soil [mm]"},   // ~5× outer
 
   // --- Mesh sizes ---
   lc_cond       = {0.5,   Name "Mesh/lc_cond"},
