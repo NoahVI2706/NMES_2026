@@ -9,6 +9,7 @@ DefineConstant[
 
   // Aluminium conductor (matches Q1 table)
   sigma_Al      = {3.8e7,   Name "Cable/Materials/Aluminium/sigma"},
+  A_cond_Al     = {240.0,   Name "Cable/Materials/Aluminium/metal area [mm2]"},
   epsilon_r_Al  = {1.0,     Name "Cable/Materials/Aluminium/epsilon_r"},
 
   sigma_XLPE    = {1e-18,   Name "Cable/Materials/XLPE/sigma"},
@@ -99,7 +100,8 @@ Group {
 Function {
   eps0 = 8.8541878128e-12;
 
-  sigma[Region[{Ind_1,Ind_2,Ind_3}]]    = sigma_Al;
+  sigma_Al_eff = sigma_Al*A_cond_Al/(Pi*9.05^2);
+  sigma[Region[{Ind_1,Ind_2,Ind_3}]]    = sigma_Al_eff;
   epsilon[Region[{Ind_1,Ind_2,Ind_3}]]  = epsilon_r_Al * eps0;
 
   sigma[Region[{XLPE_A,XLPE_B,XLPE_C}]]   = sigma_XLPE;

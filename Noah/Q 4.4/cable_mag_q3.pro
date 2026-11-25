@@ -19,6 +19,7 @@ DefineConstant[
 
   // --- Materials ---
   sigma_Al    = {3.77e7, Name "Cable/Materials/Aluminium/sigma"},           // Table 3
+  A_cond_Al   = {240.0, Name "Cable/Materials/Aluminium/metal area [mm2]"},
   alpha_Al    = {0.0039, Name "Cable/Materials/Aluminium/alpha [1/K]"},     // Appendix A
   Theta_Al    = {20.0,   Name "Cable/Materials/Aluminium/Temperature [C]"}, // 20 C: sigma = sigma_Al
   fill_Al     = {1.0,    Name "Cable/Materials/Aluminium/Fill factor on sigma (1 = Table 3)"},
@@ -77,8 +78,9 @@ Group {
 }
 
 Function {
-  sigma[Ind_1]    = fill_Al*sigma_Al/(1+alpha_Al*(Theta_Al-20.0));
-  sigma[Region[{Ind_2, Ind_3}]] = Flag_OneCore ? 1e-3 : fill_Al*sigma_Al/(1+alpha_Al*(Theta_Al-20.0));   // one-core test: B, C are inert
+  sigma_Al_eff = sigma_Al*A_cond_Al/(Pi*r_cond_mm^2);
+  sigma[Ind_1]    = fill_Al*sigma_Al_eff/(1+alpha_Al*(Theta_Al-20.0));
+  sigma[Region[{Ind_2, Ind_3}]] = Flag_OneCore ? 1e-3 : fill_Al*sigma_Al_eff/(1+alpha_Al*(Theta_Al-20.0));   // one-core test: B, C are inert
   sigma[Lead_A]   = sigma_Lead;
   sigma[Region[{Lead_B, Lead_C}]] = Flag_OneCore ? 0.0 : sigma_Lead;   // one-core test: sheaths B, C removed
   sigma[Steel]    = Flag_OneCore ? 0.0 : sigma_Armour;                 // one-core test: armour removed

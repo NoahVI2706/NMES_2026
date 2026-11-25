@@ -5,6 +5,7 @@ DefineConstant[
   Freq = {50.0, Name "MQS/Frequency [Hz]"},
   I_rms = {385.0, Name "MQS/Phase current RMS [A]"},
   sigma_Al_mqs = {3.77e7, Name "MQS/Aluminium conductivity [S/m]"},
+  A_cond_Al = {240.0, Name "MQS/Aluminium metal area [mm2]"},
   sigma_Lead_mqs = {4.55e6, Name "MQS/Lead conductivity [S/m]"},
   sigma_Armour_mqs = {4.7e6, Name "MQS/Steel armour conductivity [S/m]"},
   mu_r_Armour = {4.0, Name "MQS/Steel armour relative permeability"},

@@ -45,7 +45,7 @@ Function {
   mu0 = 4e-7*Pi;
   nu[Region[{Aluminium,InnerScreen,XLPE,OuterScreen,Lead,Filler,Polyethylene,Seabed}]] = 1/mu0;
   nu[Steel] = 1/(mu0*mu_r_Armour);
-  sigma[Aluminium] = sigma_Al_mqs;
+  sigma[Aluminium] = sigma_Al_mqs*A_cond_Al/(Pi*(r_conductor*1e3)^2);
   sigma[Lead] = sigma_Lead_mqs;
   sigma[Steel] = sigma_Armour_mqs;
   sigma[Seabed] = sigma_Soil_mqs;
