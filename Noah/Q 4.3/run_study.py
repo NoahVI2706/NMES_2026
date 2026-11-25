@@ -44,9 +44,7 @@ def run(study, lc, D, W, bottom):
             if len(nums) >= 3:
                 vals.extend([float(v) for v in nums[-3:]])
         T_cond_max = max(vals) if vals else None
-        P_cond = last_number(RES / "P_cond_in.txt")
-        P_lead = last_number(RES / "P_lead_in.txt")
-        P_in = None if P_cond is None or P_lead is None else P_cond + P_lead
+        P_in = last_number(RES / "P_in.txt")
         P_out = last_number(RES / "P_out.txt")
         return [study, lc, D, W, bottom, n_dofs, T_cond_max, P_in, P_out]
     except Exception as exc:
