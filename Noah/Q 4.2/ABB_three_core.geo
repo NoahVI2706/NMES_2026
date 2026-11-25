@@ -5,7 +5,7 @@ r_conductor   = 0.00905;
 r_innerScreen = 0.01025;
 r_XLPE        = 0.01825;
 r_outerScreen = 0.01875;
-r_lead        = 0.02025; // Existing 40.5 mm lead diameter; TODO: confirm against datasheet.
+r_lead        = 0.02025; // 
 
 // 2. Centres of the three phases
 x[] = {0, -0.022, 0.022};
