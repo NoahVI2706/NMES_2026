@@ -16,6 +16,13 @@ Group {
   Gamma_bottom = Region[302];
   Gamma_left = Region[303];
   Gamma_right = Region[304];
+  Armour = Region[7];
+  Soil = Region[9];
+  Domain_Mag = Region[{Aluminium,InnerScreen,XLPE,OuterScreen,Lead,Filler,Steel,Polyethylene,Seabed}];
+  DomainC_Mag = Region[{Lead,Steel,Seabed}];
+  DomainCWithI_Mag = Region[Seabed];
+  DomainS0_Mag = Region[Aluminium];
+  OuterBC_Mag = Region[{Gamma_surface,Gamma_bottom,Gamma_left,Gamma_right}];
 }
 
 Function {
@@ -35,24 +42,47 @@ Function {
     kappa[Seabed] = kappa_seabed;
   EndIf
 
-  // TODO/ELECTROTHERMAL: replace the placeholders below by
-  // 0.5*|j|^2/sigma with <a>[ ... ].
-  // A_mesh is computed on the current mesh by GetDP SurfaceArea[]:
-  // Integral[1] over the source region. This guarantees exact P_in.
-  Q[Aluminium] = 3*P_cond_per_core/SurfaceArea[];
-  Q[Lead] = 3*P_sheath_per_core/SurfaceArea[];
-  Q[InnerScreen] = 0;
-  Q[XLPE] = 0;
-  Q[OuterScreen] = 0;
-  Q[Filler] = 0;
-  Q[Steel] = 0;
-  Q[Polyethylene] = 0;
-  Q[Seabed] = 0;
+  mu0 = 4e-7*Pi;
+  nu[Region[{Aluminium,InnerScreen,XLPE,OuterScreen,Lead,Filler,Polyethylene,Seabed}]] = 1/mu0;
+  nu[Steel] = 1/(mu0*mu_r_Armour);
+  sigma[Aluminium] = sigma_Al_mqs;
+  sigma[Lead] = sigma_Lead_mqs;
+  sigma[Steel] = sigma_Armour_mqs;
+  sigma[Seabed] = sigma_Soil_mqs;
+  sigma[InnerScreen] = sigma_Semi_mqs;
+  sigma[OuterScreen] = sigma_Semi_mqs;
+  sigma[XLPE] = 0;
+  sigma[Filler] = 0;
+  sigma[Polyethylene] = 0;
+
+  CoefGeo[] = 1;
+  omega = 2*Pi*Freq;
+  Ipk = Sqrt[2]*I_rms;
+  Jpk = Ipk/(Pi*r_conductor^2);
+  y_A = -L+y_A0; y_B = -L+y_B0; y_C = -L+y_C0;
+  dA[] = (X[]-x_A)^2+(Y[]-y_A)^2;
+  dB[] = (X[]-x_B)^2+(Y[]-y_B)^2;
+  dC[] = (X[]-x_C)^2+(Y[]-y_C)^2;
+  js0[] = Vector[0,0,Jpk*(dA[]<dB[] && dA[]<dC[] ?
+    Complex[1,0] : (dB[]<dC[] ? Complex[-0.5,-Sqrt[3]/2] :
+    Complex[-0.5,Sqrt[3]/2]))];
   h[] = h;
   Tamb[] = T_amb;
 }
 
 Constraint {
+  { Name MagneticVectorPotential_2D;
+    Case { { Region OuterBC_Mag; Value 0; } }
+  }
+  { Name Current_2D;
+    Case { { Region Seabed; Value 0; } }
+  }
+  { Name Voltage_2D;
+    Case {
+      { Region Lead; Value 0; }
+      { Region Steel; Value 0; }
+    }
+  }
   { Name TemperatureNatural; Type Assign;
     Case {}
   }
@@ -79,6 +109,30 @@ If (outer_all_dirichlet == 1)
 EndIf
 
 FunctionSpace {
+  { Name Hcurl_a_Mag_2D; Type Form1P;
+    BasisFunction {
+      { Name se; NameOfCoef ae; Function BF_PerpendicularEdge;
+        Support Domain_Mag; Entity NodesOf[All]; }
+    }
+    Constraint {
+      { NameOfCoef ae; EntityType NodesOf;
+        NameOfConstraint MagneticVectorPotential_2D; }
+    }
+  }
+  { Name Hregion_u_Mag_2D; Type Form1P;
+    BasisFunction {
+      { Name sr; NameOfCoef ur; Function BF_RegionZ;
+        Support DomainC_Mag; Entity DomainC_Mag; }
+    }
+    GlobalQuantity {
+      { Name U; Type AliasOf; NameOfCoef ur; }
+      { Name I; Type AssociatedWith; NameOfCoef ur; }
+    }
+    Constraint {
+      { NameOfCoef U; EntityType Region; NameOfConstraint Voltage_2D; }
+      { NameOfCoef I; EntityType Region; NameOfConstraint Current_2D; }
+    }
+  }
   { Name Hgrad_T; Type Form0;
     BasisFunction {
       { Name sn; NameOfCoef Tn; Function BF_Node;
@@ -99,9 +153,35 @@ FunctionSpace {
 }
 
 Formulation {
+  { Name Magnetodynamic_a_2D; Type FemEquation;
+    Quantity {
+      { Name a; Type Local; NameOfSpace Hcurl_a_Mag_2D; }
+      { Name ur; Type Local; NameOfSpace Hregion_u_Mag_2D; }
+      { Name I; Type Global; NameOfSpace Hregion_u_Mag_2D[I]; }
+      { Name U; Type Global; NameOfSpace Hregion_u_Mag_2D[U]; }
+    }
+    Equation {
+      Integral { [ nu[]*Dof{d a},{d a} ];
+        In Domain_Mag; Jacobian Vol; Integration I1; }
+      Integral { DtDof [ sigma[]*Dof{a},{a} ];
+        In DomainC_Mag; Jacobian Vol; Integration I1; }
+      Integral { [ sigma[]*Dof{ur},{a} ];
+        In DomainC_Mag; Jacobian Vol; Integration I1; }
+      Integral { DtDof [ sigma[]*Dof{a},{ur} ];
+        In DomainC_Mag; Jacobian Vol; Integration I1; }
+      Integral { [ sigma[]*Dof{ur},{ur} ];
+        In DomainC_Mag; Jacobian Vol; Integration I1; }
+      GlobalTerm { [ Dof{I}*Sign[CoefGeo[]],{U} ];
+        In DomainCWithI_Mag; }
+      Integral { [ -js0[],{a} ];
+        In DomainS0_Mag; Jacobian Vol; Integration I1; }
+    }
+  }
   { Name ThermalSteady; Type FemEquation;
     Quantity {
       { Name T; Type Local; NameOfSpace Hgrad_T; }
+      { Name a; Type Local; NameOfSpace Hcurl_a_Mag_2D; }
+      { Name ur; Type Local; NameOfSpace Hregion_u_Mag_2D; }
     }
     Equation {
       Integral { [ kappa[]*Dof{d T},{d T} ];
@@ -112,20 +192,25 @@ Formulation {
         Integral { [ -h*Tamb[],{T} ];
           In Gamma_surface; Jacobian Sur; Integration I1; }
       EndIf
-      Integral { [ -Q[],{T} ];
-        In Domain; Jacobian Vol; Integration I1; }
+      Integral { [ -0.5/sigma[]*<a>[SquNorm[js0[]]],{T} ];
+        In DomainS0_Mag; Jacobian Vol; Integration I1; }
+      Integral { [ -0.5*sigma[]*<a>[SquNorm[Dt[{a}]+{ur}/CoefGeo[]]],{T} ];
+        In DomainC_Mag; Jacobian Vol; Integration I1; }
     }
   }
 }
 
 Resolution {
-  { Name Thermal;
+  { Name Coupled;
     System {
-      { Name A; NameOfFormulation ThermalSteady; }
+      { Name Sys_Mag; NameOfFormulation Magnetodynamic_a_2D;
+        Type Complex; Frequency Freq; }
+      { Name Sys_The; NameOfFormulation ThermalSteady; }
     }
     Operation {
-      Generate[A]; Solve[A];
-      SaveSolution[A];
+      CreateDir["res"];
+      Generate[Sys_Mag]; Solve[Sys_Mag]; SaveSolution[Sys_Mag];
+      Generate[Sys_The]; Solve[Sys_The]; SaveSolution[Sys_The];
     }
   }
 }
@@ -136,16 +221,25 @@ PostProcessing {
       { Name T; Value { Term { [ {T} ]; In Domain; Jacobian Vol; } } }
       { Name T_surface; Value { Term { [ {T} ];
         In Gamma_surface; Jacobian Sur; } } }
-      // TODO/P_IN: mesh-exact source power for all three conductors/leads.
-      // A_mesh=Integral[1] over each source region.
-      { Name A_cond_mesh; Value { Integral { [ 1 ];
+      { Name Loss_Conductors; Value { Integral { Type Global;
+        [ 0.5/sigma[]*<a>[SquNorm[js0[]]] ];
         In Aluminium; Jacobian Vol; Integration I1; } } }
-      { Name A_lead_mesh; Value { Integral { [ 1 ];
+      { Name Loss_Sheaths; Value { Integral { Type Global;
+        [ 0.5*sigma[]*<a>[SquNorm[Dt[{a}]+{ur}/CoefGeo[]]] ];
         In Lead; Jacobian Vol; Integration I1; } } }
-      { Name P_cond_in; Value { Integral { [ Q[] ];
-        In Aluminium; Jacobian Vol; Integration I1; } } }
-      { Name P_lead_in; Value { Integral { [ Q[] ];
-        In Lead; Jacobian Vol; Integration I1; } } }
+      { Name Loss_Armour; Value { Integral { Type Global;
+        [ 0.5*sigma[]*<a>[SquNorm[Dt[{a}]+{ur}/CoefGeo[]]] ];
+        In Steel; Jacobian Vol; Integration I1; } } }
+      { Name Loss_Other; Value { Integral { Type Global;
+        [ 0.5*sigma[]*<a>[SquNorm[Dt[{a}]+{ur}/CoefGeo[]]] ];
+        In Seabed; Jacobian Vol; Integration I1; } } }
+      { Name P_in; Value {
+        Integral { Type Global; [ 0.5/sigma[]*<a>[SquNorm[js0[]]] ];
+          In Aluminium; Jacobian Vol; Integration I1; }
+        Integral { Type Global;
+          [ 0.5*sigma[]*<a>[SquNorm[Dt[{a}]+{ur}/CoefGeo[]]] ];
+          In DomainC_Mag; Jacobian Vol; Integration I1; }
+      } }
       { Name P_out; Value { Integral { Type Global;
         [ h[]*({T}-Tamb[]) ]; In Gamma_surface;
         Jacobian Sur; Integration I1; } } }
@@ -158,10 +252,11 @@ PostOperation {
     Operation {
       Print[ T, OnElementsOf Domain, File "res/T_domain.pos" ];
       Print[ T, OnElementsOf Cable, File "res/T_cable.pos" ];
-      Print[ A_cond_mesh[Aluminium], OnGlobal, Format Table, File "res/A_cond_mesh.txt" ];
-      Print[ A_lead_mesh[Lead], OnGlobal, Format Table, File "res/A_lead_mesh.txt" ];
-      Print[ P_cond_in[Aluminium], OnGlobal, Format Table, File "res/P_cond_in.txt" ];
-      Print[ P_lead_in[Lead], OnGlobal, Format Table, File "res/P_lead_in.txt" ];
+      Print[ Loss_Conductors, OnGlobal, Format Table, File "res/loss_conductors.txt" ];
+      Print[ Loss_Sheaths, OnGlobal, Format Table, File "res/loss_sheaths.txt" ];
+      Print[ Loss_Armour, OnGlobal, Format Table, File "res/loss_armour.txt" ];
+      Print[ Loss_Other, OnGlobal, Format Table, File "res/loss_other.txt" ];
+      Print[ P_in, OnGlobal, Format Table, File "res/P_in.txt" ];
       Print[ P_out, OnGlobal, Format Table, File "res/P_out.txt" ];
       Print[ T, OnElementsOf Aluminium, Format Table, File "res/T_cond_elements.txt" ];
       Print[ T_surface, OnElementsOf Gamma_surface, Format Table, File "res/T_surface_elements.txt" ];

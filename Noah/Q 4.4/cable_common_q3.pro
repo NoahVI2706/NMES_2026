@@ -33,8 +33,8 @@ DefineConstant[
   epsilon_r_Soil= {10.0,    Name "Cable/Materials/Soil/epsilon_r"},
 
   // Shared geometry (needed for the cut)
-  d_trefoil     = {40.0,    Name "Geometry/d_trefoil [mm]"},
-  r_lead        = {19.75,   Name "Geometry/r_lead [mm]"}
+  d_trefoil     = {41.2,    Name "Geometry/d_trefoil [mm]"},
+  r_lead        = {20.35,   Name "Geometry/r_lead [mm]"}
 ];
 DefineConstant[ Flag_Simplify = {0, Name "Cable/Simplification (0 full, 1 cores only, 2 cores + grounded outer semicon, 3 one core only)"} ];
 DefineConstant[ Core_Sel = {3, Name "Cable/One-core variant: core kept (1=A, 2=B, 3=C)"} ];   // NEW: used only when Flag_Simplify == 3

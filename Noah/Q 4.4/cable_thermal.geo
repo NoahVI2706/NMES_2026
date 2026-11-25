@@ -11,7 +11,7 @@ DefineConstant[
   r_innerScreen = {0.01025, Name "Geometry/Inner screen radius [m]"},
   r_XLPE = {0.01825, Name "Geometry/XLPE radius [m]"},
   r_outerScreen = {0.01875, Name "Geometry/Outer screen radius [m]"},
-  r_lead = {0.02025, Name "Geometry/Lead radius [m]"},
+  r_lead = {0.02035, Name "Geometry/Lead radius [m]"},
   lc_cable = {0.4, Name "Mesh/lc_cable [mm]"},
   lc_far = {1.500, Name "Mesh/lc_far reference [m]"}
 ];
