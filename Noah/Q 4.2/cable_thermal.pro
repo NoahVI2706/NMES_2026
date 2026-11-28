@@ -1,5 +1,5 @@
 DefineConstant[
-  bottom = {1, Choices {0="Dirichlet T=T_amb",1="Zero flux"}, Name "Boundary/Bottom condition"},
+  bottom = {0, Choices {0="Dirichlet T=T_amb",1="Zero flux"}, Name "Boundary/Bottom condition"},
   kappa_uniform = {0, Choices {0="Real kappa",1="Uniform kappa=1"}, Name "Test/Uniform kappa"},
   outer_all_dirichlet = {0, Choices {0="Normal boundaries",1="All outer boundaries Dirichlet"}, Name "Test/All outer boundaries Dirichlet"},
   T_amb = {20.0, Name "Thermal/Ambient temperature [C]"},
