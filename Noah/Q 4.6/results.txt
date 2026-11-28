@@ -1,0 +1,22 @@
+Q4.6 coupled MQS-thermal solve
+
+Parameters changed from Q4.4:
+  sigma_conductor = 2.4425e7 S/m (used directly as effective conductor conductivity)
+  kappa_XLPE = 0.2857 W/(m K)
+  kappa_filler = 0.1667 W/(m K)
+  kappa_polyethylene = 0.2857 W/(m K)
+Other settings unchanged; sigma_Soil_mqs = 0.01 S/m as in the previous Q4.4 run.
+
+Losses:
+  Conductors: 70.5618515094 W/m
+  Lead sheaths: 1.4406298864 W/m
+  Steel armour: 2.9220281431 W/m
+  Seabed/other: 0.0000001531 W/m
+  Total / P_in: 74.9245096919 W/m
+
+Maximum conductor temperatures:
+  Core A: 87.6214228237 C
+  Core B: 87.6634971934 C
+  Core C: 87.6660843375 C
+
+P_out: 74.9245096920 W/m

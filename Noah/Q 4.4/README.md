@@ -33,14 +33,15 @@ New-Item -ItemType Directory -Force .\res | Out-Null
 
 GetDP writes the loss, temperature, and power tables plus `T_domain.pos` and `T_cable.pos` under `res/`; the Python command creates the cable zoom shown in the slide. The conductor/sheath placeholder power parameters are not used by the coupled Joule source.
 
-| Result | Reproduced value |
-|---|---:|
-| Conductor losses | 49.011611 W/m |
-| Sheath losses | 1.354085 W/m |
-| Armour losses | 2.927065 W/m |
-| Other losses | 0.000000153 W/m |
-| Total losses / `P_in` / `P_out` | 53.292761 W/m |
+
+| Result                            |                         Reproduced value |
+| ----------------------------------- | -----------------------------------------: |
+| Conductor losses                  |                            49.011611 W/m |
+| Sheath losses                     |                             1.354085 W/m |
+| Armour losses                     |                             2.927065 W/m |
+| Other losses                      |                          0.000000153 W/m |
+| Total losses /`P_in` / `P_out`    |                            53.292761 W/m |
 | `T_cond_max` (A / B / C); hotspot | 59.217547 / 59.251610 / 59.253187 °C; C |
-| `T_surface_max` | 20.034043 °C |
-| Relative power error | 5.58e-12 |
-| DoFs (MQS + thermal) | 64,960 + 32,649 |
+| `T_surface_max`                   |                            20.034043 °C |
+| Relative power error              |                                 5.58e-12 |
+| DoFs (MQS + thermal)              |                          64,960 + 32,649 |
