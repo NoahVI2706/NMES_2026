@@ -1,12 +1,14 @@
 SetFactory("OpenCASCADE");
 
-// 1. Dimensions (metres)
-r_conductor   = 0.00905;
-r_innerScreen = 0.01025;
-r_XLPE        = 0.01825;
-r_outerScreen = 0.01875;
-r_lead        = 0.02025;
-
+// ONELAB geometry parameters; defaults preserve the submitted Q2 model.
+DefineConstant[
+  r_conductor = {0.00905, Name "Geometry/Conductor radius [m]"},
+  r_innerScreen = {0.01025, Name "Geometry/Inner screen outer radius [m]"},
+  r_XLPE = {0.01825, Name "Geometry/XLPE outer radius [m]"},
+  r_outerScreen = {0.01875, Name "Geometry/Outer screen outer radius [m]"},
+  r_lead = {0.02025, Name "Geometry/Lead sheath outer radius [m]"},
+  meshSizeMax = {0.001, Name "Mesh/Maximum size [m]"}
+];
 // 2. Centres of the three phases
 x[] = {0, -0.022, 0.022};
 y[] = {0.0254, -0.0127, -0.0127};
@@ -53,7 +55,7 @@ For i In {0:0}
 EndFor
 
 // 5. Make material interfaces conforming
-Coherence; // I dont understand the importance of this command ---> find out later
+Coherence; // Merge coincident entities after Boolean operations so material interfaces share mesh nodes.
 
 // 6. Physical material groups
 Physical Surface("Aluminium", 1) = {1};
@@ -92,4 +94,4 @@ Physical Curve("Ground", 201) = {groundCurves[]};
 Printf("Number of grounded curves: %g", #groundCurves[]);
 
 // 9. Mesh settings
-Mesh.MeshSizeMax = 0.001; // Maximum target element size: 1 mm
+Mesh.MeshSizeMax = meshSizeMax; // Default: 1 mm

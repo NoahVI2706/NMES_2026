@@ -26,10 +26,16 @@ Group {
 
 // 2. Material properties
 eps0 = 8.854187817e-12; // Vacuum permittivity [F/m]
-Freq = 50; // Frequency [Hz]
+DefineConstant[
+  Freq = {50, Name "Excitation/Frequency [Hz]"},
+  U_LL = {45000, Name "Excitation/Line voltage RMS [V]"},
+  sigma_screen = {2, Name "Materials/Screen conductivity [S/m]"},
+  sigma_XLPE = {1e-18, Name "Materials/XLPE conductivity [S/m]"},
+  epsr_screen = {2.25, Name "Materials/Screen relative permittivity"},
+  epsr_XLPE = {2.5, Name "Materials/XLPE relative permittivity"}
+];
 
 // Three-phase operating voltage
-U_LL = 45000;                  // Line-to-line RMS voltage [V]
 Vpeak = Sqrt[2/3] * U_LL;     // Phase-to-ground peak voltage [V]
 
 // Use first-order nodal elements (in professors code)
@@ -37,14 +43,14 @@ Flag_Degree_v = 1;
 
 Function {
   // Electrical conductivity [S/m]
-  sigma[InnerScreen] = 2;
-  sigma[XLPE]        = 1e-18;
-  sigma[OuterScreen] = 2;
+  sigma[InnerScreen] = sigma_screen;
+  sigma[XLPE]        = sigma_XLPE;
+  sigma[OuterScreen] = sigma_screen;
 
   // Absolute permittivity [F/m]
-  epsilon[InnerScreen] = 2.25 * eps0;
-  epsilon[XLPE]        = 2.5 * eps0;
-  epsilon[OuterScreen] = 2.25 * eps0;
+  epsilon[InnerScreen] = epsr_screen * eps0;
+  epsilon[XLPE]        = epsr_XLPE * eps0;
+  epsilon[OuterScreen] = epsr_screen * eps0;
 }
 
 // 3. Electric potential boundary conditions
